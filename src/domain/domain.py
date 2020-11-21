@@ -1,10 +1,10 @@
 from datetime import date
 class movieException(Exception):
-    def __init__(self, msg):
-        self._msg = msg
+    def __init__(self, message):
+        self._message = message
 
     def __str__(self):
-        return self._msg
+        return self._message
 
 class Movie:
     """
@@ -93,12 +93,12 @@ class Client:
 
 
 class rentalException(Exception):
-    def __init__(self, msg):
-        self._msg = msg
+    def __init__(self, message):
+        self._message = message
 
 
     def __str__(self):
-        return self._msg
+        return self._message
 
 
 class Rental:

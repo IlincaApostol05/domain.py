@@ -25,7 +25,6 @@ class ClientValidator:
             raise clientException("The entered id is invalid!")
 
 
-
 class MovieValidator:
 
     def __init__(self,movie):

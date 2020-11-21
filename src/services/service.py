@@ -5,6 +5,7 @@ from src.domain.domain import clientException
 from src.domain.domain import rentalException
 from src.domain.domain import Rental
 from random import randint
+from src.Validators.validate import ClientValidator,MovieValidator,Rental_validator
 
 
 class Service:
@@ -15,13 +16,35 @@ class Service:
         """
         Generates the initial lists of movies,clients and rentals
         """
-        self._movies = []
-        self._clients = []
-        self._rented = []
+        self._movies = [Movie(1726, "| Alice in wonderland |","The best animated movie |", "Animation"),
+                        Movie(8374, "| Da Vinci Code |", "What are the secrets of Paris? |", "Mistery"),
+                        Movie(4739, "| No time to die |", "2020 movie |", "Action", ),
+                        Movie(2314, "| Annabell |", "See if you can resist |", "Horror"),
+                        Movie(1849, "| The Secret |", "The secret to leading a successful life |", "Documentary"),
+                        Movie(1348, "| Mister Bean |", "Try not to laugh |", "Comedy"),
+                        Movie(1949, "| Inferno |", "It is true what Dante said? |", "Thriller"),
+                        Movie(8634, "| The invisible guest |", "Who will solve the crime..? |", "Police"),
+                        Movie(9237, "| Jurassic World |", "What would life be with dinosaurs? |", "SF"),
+                        Movie(3847, "| Word War two |", "What really happened in Word War two?","History")]
 
-    @property
-    def movies(self):
-        return self._movies
+        self._clients = [Client(164, "Olivia Smith"),
+                        Client(273, "Sophia Robinson"),
+                        Client(934, "Charlie Anderson"),
+                        Client(830, "Harry Wright"),
+                        Client(293, "Charlotte Brown"),
+                        Client(334, "Thomas Edwards"),
+                        Client(732, "Ruby White"),
+                        Client(139, "Henry Moore"),
+                        Client(456, "Ben Jones"),
+                        Client(528, "Dylan Martin")]
+        self._rented = []
+        for index in range(len(self._movies)-1):
+            for index2 in self._clients:
+                self._rented.append(Rental(randint(10000,90000),self._movies[index]._movie_id,index2._client_id,date(randint(2015,2017),randint(1,10),randint(1,30)),date(randint(2018,2020),randint(11,12),randint(1,30)),date(randint(2018,2020),randint(1,12),randint(1,30))))
+                index+=1
+            break
+
+
 
     @property
     def clients(self):
@@ -30,45 +53,6 @@ class Service:
     @property
     def rented(self):
         return self._rented
-
-
-    def test_init_movies(self , movies):
-        self._movies = movies
-        movies.append(Movie(1726, "| Alice in wonderland |","The best animated movie |", "Animation"))
-        movies.append(Movie(8374, "| Da Vinci Code |", "What are the secrets of Paris? |", "Mistery"))
-        movies.append(Movie(4739, "| No time to die |", "2020 movie |", "Action", ))
-        movies.append(Movie(2314, "| Annabell |", "See if you can resist |", "Horror"))
-        movies.append(Movie(1849, "| The Secret |", "The secret to leading a successful life |", "Documentary"))
-        movies.append(Movie(1348, "| Mister Bean |", "Try not to laugh |", "Comedy"))
-        movies.append(Movie(1949, "| Inferno |", "It is true what Dante said? |", "Thriller"))
-        movies.append(Movie(8634, "| The invisible guest |", "Who will solve the crime..? |", "Police"))
-        movies.append(Movie(9237, "| Jurassic World |", "What would life be with dinosaurs? |", "SF"))
-        movies.append(Movie(3847, "| Word War two |", "What really happened in Word War two? |", "History"))
-
-
-
-    def test_init_clients(self, clients):
-        self._clients = clients
-        clients.append(Client(164, "Olivia Smith"))
-        clients.append(Client(273, "Sophia Robinson"))
-        clients.append(Client(934, "Charlie Anderson"))
-        clients.append(Client(830, "Harry Wright"))
-        clients.append(Client(293, "Charlotte Brown"))
-        clients.append(Client(334, "Thomas Edwards"))
-        clients.append(Client(732, "Ruby White"))
-        clients.append(Client(139, "Henry Moore"))
-        clients.append(Client(456, "Ben Jones"))
-        clients.append(Client(528, "Dylan Martin"))
-
-
-
-    def test_init_rented(self,rented):
-        self._rented = rented
-        for index in range(len(self._movies)-1):
-            for index2 in self._clients:
-                rented.append(Rental(randint(10000,90000),self._movies[index]._movie_id,index2._client_id,date(randint(2015,2017),randint(1,10),randint(1,30)),date(randint(2018,2020),randint(11,12),randint(1,30)),date(randint(2018,2020),randint(1,12),randint(1,30))))
-                index+=1
-            break
 
 
 
@@ -84,7 +68,7 @@ class Service:
         movie = Movie(id,title,description,genre)
         for index in self._movies[::-1]:
             if id == index._movie_id:
-               raise ValueError("Two movies cannot have the same id")
+               raise movieException("Two movies cannot have the same id")
         self._movies.append(movie)
         print("Movie succesfully added")
 
@@ -95,10 +79,14 @@ class Service:
         :param id: (int)-The id of the movie we want to remove
         :return:
         """
+        found=False
         for index in self._movies[::-1]:
             if id == index._movie_id:
+                found =True
                 self._movies.remove(index)
-        print("Movie succesfully removed")
+                print("Movie succesfully removed")
+        if found == False:
+            raise movieException("This movie cannot be removed because it is not in the list")
 
 
     def update_movies(self,id,newtitle,newdescription,newgenre):
@@ -117,7 +105,10 @@ class Service:
                 movie._title = newtitle
                 movie._description = newdescription
                 movie._genre = newgenre
-        return found
+                print("Movie successfully updated")
+        if found == False:
+            raise movieException("This movie cannot be updated because it is not in the list")
+
 
 
     def add_client(self,id,name):
@@ -130,7 +121,7 @@ class Service:
         client=Client(id,name)
         for index in self._clients:
             if id == index._client_id:
-                raise ValueError("Two clients cannot have the same id")
+                raise clientException("Two clients cannot have the same id")
         self._clients.append(client)
         print("Client succesfully added")
 
@@ -141,10 +132,14 @@ class Service:
         :param id: (int)-The id of the client
         :return: -
         """
+        found=False
         for index in self._clients[::-1]:
             if id == index._client_id:
+                found = True
                 self._clients.remove(index)
-        print("Client succesfully removed")
+                print("Client succesfully removed")
+        if found == False:
+            raise clientException("This client cannot be removed because it is not in the list")
 
 
     def update_client(self,id,newname):
@@ -159,6 +154,7 @@ class Service:
             if id == client._client_id:
                 found = True
                 client._name = newname
+                print("Client successfully updated")
         return found
 
 
@@ -222,77 +218,7 @@ class Service:
                         print("Movie succesfully returned")
                         break
         if found == 0:
-            raise ValueError("But this movie was returned!")
-
-
-def test_add_movie():
-    service = Service()
-    assert len(service) != 0
-    try:
-        service.add_movie(123,'Alladin','Children movie','Animation')
-    except movieException:
-        assert True
-    assert len(service) != 1
-
-
-def test_add_client():
-    service = Service()
-    assert len(service) != 0
-    try:
-        service.add_client(123,'Brown Nathan')
-    except clientException:
-        assert True
-    assert len(service) != 1
-
-
-def test_remove_movie():
-    service = Service()
-    assert len(service) != 2
-    try:
-        service.remove_movie(123,'Alladin','Children movie','Animation')
-    except movieException:
-        assert True
-    assert len(service) != 1
-
-
-def test_remove_client():
-    service = Service()
-    assert len(service) != 2
-    try:
-        service.remove_movie(123,'John Brown')
-    except clientException:
-        assert True
-    assert len(service) != 1
-
-
-def test_service():
-    test_add_movie()
-    test_add_client()
-    test_remove_client()
-    test_remove_movie()
-
-#test_service()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            raise movieException("But this movie was returned!")
 
 
 
