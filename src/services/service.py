@@ -20,30 +20,31 @@ class Service:
         self._client_validator = client_validator
         self._rental_validator = rental_validator
 
-        self._movies=self._movie_repository._movies
-        self._clients=self._client_repository._clients
-        self._rented=self._rental_repository._rented
+        self._movies = self._movie_repository._movies
+        self._clients = self._client_repository._clients
+        self._rented = self._rental_repository._rented
 
 
         """
         Generates the initial lists of movies,clients and rentals
         """
 
+    @property
+    def movies(self):
+        return self._movies
 
 
     @property
     def clients(self):
         return self._clients
 
+
     @property
     def rented(self):
         return self._rented
 
-
-
-    def get_all_movie(self):
-        return self._movie_repository.get_all_movies()
-
+    def __str__(self):
+        return str(self._client_id)+ " "+ self._name
 
 
     def add_movie(self,id,title,description,genre):
@@ -56,11 +57,11 @@ class Service:
         :return:
         """
         movie = str(Movie(id,title,description,genre))
-        for index in self._movies:
-            if id == index._movie_id:
+        for movie in self._movies:
+            if id == movie._movie_id:
                 raise movieException("Two movies cannot have the same id")
         self._movie_repository.add(movie)
-        print("Movie succesfully added")
+
 
 
 
@@ -71,16 +72,15 @@ class Service:
         :return:
         """
         found=False
-        for index in self._movies[::-1]:
-            if id == index._movie_id:
+        for movie in self._movies[::-1]:
+            if id == movie._movie_id:
                 found =True
-                self._movie_repository.remove(index)
-                print("Movie succesfully removed")
+                self._movie_repository.remove(movie)
         if found == False:
             raise movieException("This movie cannot be removed because it is not in the list")
 
 
-    def update_movies(self,id,newtitle,newdescription,newgenre):
+    def update_movies(self,id,new_title,new_description,new_genre):
         """
         This function update the list of movies.It will change the title,description and genre of a movie by a given id
         :param id: (int)-The id of the movie we want to update.This will be not changed
@@ -93,15 +93,12 @@ class Service:
         for movie in self._movies:
             if id == movie._movie_id:
                 found =True
-                movie._title = newtitle
-                movie._description = newdescription
-                movie._genre = newgenre
-                print("Movie successfully updated")
+                movie._title = new_title
+                movie._description = new_description
+                movie._genre = new_genre
         if found == False:
             raise movieException("This movie cannot be updated because it is not in the list")
 
-    def get_all_clients(self):
-        return self._client_repository._clients
 
     def add_client(self,id,name):
         """
@@ -111,11 +108,10 @@ class Service:
         :return:
         """
         client=Client(id,name)
-        for index in self._clients:
-            if id == index._client_id:
+        for client in self._clients:
+            if id == client._client_id:
                 raise clientException("Two clients cannot have the same id")
         self._client_repository.add(client)
-        print("Client succesfully added")
 
 
     def remove_client(self,id):
@@ -125,16 +121,15 @@ class Service:
         :return: -
         """
         found=False
-        for index in self._clients[::-1]:
-            if id == index._client_id:
+        for client in self._clients[::-1]:
+            if id == client._client_id:
                 found = True
-                self._client_repository.remove(index)
-                print("Client succesfully removed")
+                self._client_repository.remove(client)
         if found == False:
             raise clientException("This client cannot be removed because it is not in the list")
 
 
-    def update_client(self,id,newname):
+    def update_client(self,id,new_name):
         """
         This function updates the list of clients.It will change the name of the client with a given id
         :param id:
@@ -145,8 +140,7 @@ class Service:
         for client in self._clients:
             if id == client._client_id:
                 found = True
-                client._name = newname
-                print("Client successfully updated")
+                client._name = new_name
         return found
 
 
@@ -157,9 +151,9 @@ class Service:
         :return: False if we find such a client,true otherwise
         """
         found=0
-        for index in self._rented[::-1]:
-            if client_id == index._client_id:
-                if index._returned_date > index.due_date:
+        for client in self._rented[::-1]:
+            if client_id == client._client_id:
+                if client._returned_date > client.due_date:
                     found=1
         return found
 
@@ -178,13 +172,12 @@ class Service:
             found1=2
             raise rentalException("Rented day must be bigger than due date")
         elif rented_day <= given_day:
-            for index in self._movies:
+            for movie in self._movies:
                 if self.have_rented(client_id) == 0:
-                    if movie_id == index._movie_id:
+                    if movie_id == movie._movie_id:
                         found1 = 1
                         rented = Rental(randint(10000,90000),movie_id,client_id,rented_day,given_day,'0')
                         self._rented.append(rented)
-                        print("Movie succesfully rented")
         if self.have_rented(client_id) == 1:
             raise rentalException("This client cannot rent a movie")
         if found1 == 0:
@@ -200,19 +193,18 @@ class Service:
         :return:
         """
         found = 0
-        for index in self._rented:
-            if index._returned_date == '0':
-                if client_id == index._client_id:
-                    if movie_id == index._movie_id:
+        for rent in self._rented:
+            if rent._returned_date == '0':
+                if client_id == rent._client_id:
+                    if movie_id == rent._movie_id:
                         found = 1
-                        index._returned_date = returned_days
-                        print("Movie succesfully returned")
-                        break
+                        rent._returned_date = returned_days
+
         if found == 0:
             raise ValueError("But this movie was returned!")
 
 
-    def find_movie_by_title(self,semititle):
+    def find_movie_by_title(self,semi_title):
         """
         This function find a movie by a given partial title
         :param semititle:The partial title given
@@ -220,7 +212,7 @@ class Service:
         """
         list = []
         for index in range(len(self._movies)):
-            if search(semititle , self._movies[index]._title):
+            if search(semi_title , self._movies[index]._title):
                 list.append(str(self._movies[index]._movie_id)+" "+self._movies[index]._title+" "+self._movies[index]._description+""+self._movies[index]._genre)
         return list
 
@@ -237,6 +229,17 @@ class Service:
                 list.append(str(self._clients[index]._client_id)+" "+self._clients[index]._name)
         return list
 
+    def get_all_movie(self):
+        return self._movie_repository.get_all_movies()
+
+
+    def get_all_rentals(self):
+        return self._rental_repository.get_all_rentals()
+
+
+    def get_all_clients(self):
+        return self._client_repository.get_all_clients()
+
 
 class Statistics:
     def __init__(self,service):
@@ -246,7 +249,7 @@ class Statistics:
         self._rented = self._service._rented
 
 
-    def how_many_times_rented(self,thismovie):
+    def how_many_times_rented(self,this_movie):
         """
         This function calculates how many times a movie was rented
         :param thismovie: The movie(int) given by the user
@@ -254,7 +257,7 @@ class Statistics:
         """
         nr=0
         for index in self._rented[::-1]:
-            if index._movie_id == thismovie:
+            if index._movie_id == this_movie:
                 nr=nr+1
         return nr
 
@@ -299,9 +302,7 @@ class Statistics:
         return new_list
 
 
-
-
-    def has_past(self,movieid):
+    def has_past(self,movie_id):
         """
         This function tell us if a rented movie passed it due date for return
         :param movieid: The movie id(int) given by the user
@@ -309,13 +310,13 @@ class Statistics:
         """
         passed = False
         for index in self._rented:
-            if index._movie_id == movieid:
+            if index._movie_id == movie_id:
                 if index._returned_date > index._due_date:
                     passed=True
         return passed
 
 
-    def how_days_delay(self,movieid):
+    def how_days_delay(self,movie_id):
         """
         This function computes the number of days that passed for a rented movie=returned_date-due_date
         :param movieid: The movie id given by the user
@@ -323,8 +324,8 @@ class Statistics:
         """
         number_of_days=0
         for index in self._rented:
-            if index._movie_id == movieid:
-                if self.has_past(movieid) == True:
+            if index._movie_id == movie_id:
+                if self.has_past(movie_id) == True:
                     number_of_days = number_of_days + abs((index._returned_date - index._due_date).days)
         return number_of_days
 

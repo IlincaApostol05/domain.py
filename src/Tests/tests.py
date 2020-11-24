@@ -311,7 +311,7 @@ class Test_Functions(unittest.TestCase):
 
 
 class TestStatistics(unittest.TestCase):
-    
+
     def setUp(self):
         self._Test =Statistics
         self._Test.max_delay()

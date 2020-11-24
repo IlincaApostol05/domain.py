@@ -35,17 +35,18 @@ class Console:
 
 
     def display_movies_ui(self):
-        for movie in self._service._movies:
+        for movie in self._service.get_all_movie():
             print(movie)
 
 
+
     def display_clients_ui(self):
-        for client in self._service._clients:
+        for client in self._service.get_all_clients():
             print(client)
 
 
     def display_rentals_ui(self):
-        for rental in self._service._rented:
+        for rental in self._service.get_all_rentals():
             print(str(str(rental._rental_id)+" "+str(rental._movie_id)+" "+str(rental._client_id)+" "+str(rental._rented_date)+" "+str(rental._due_date)+" "+str(rental._returned_date)))
 
 
