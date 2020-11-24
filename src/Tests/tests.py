@@ -1,6 +1,7 @@
 from src.Validators.validate import ClientValidator,MovieValidator,Rental_validator
 from src.domain.domain import clientException,movieException,rentalException,Client,Movie,Rental
 from datetime import date
+import unittest
 
 
 class Test_ClientValidator:
@@ -234,8 +235,36 @@ class Test_Rentals_Validation:
 #Test_Rentals_Validation.run_all_tests_rentals()
 
 
+class MovieTest(unittest.TestCase):
+    def test_movie(self):
+        movie = Movie(467,'Avatar','2000','Action')
+        self.assertEqual(movie.movie_id,467)
+        self.assertEqual(movie.title, 'Avatar')
+        self.assertEqual(movie.description, '2020')
+        self.assertEqual(movie.genre, 'Action')
 
 
+class ClientTest(unittest.TestCase):
+    def test_client(self):
+        client = Client(123,'Robert White')
+        self.assertEqual(client.client_id,123)
+        self.assertEqual(client.name)
+
+
+class RentalTest(unittest.TestCase):
+    def test_rental(self):
+        rental = Rental(123,456,789,date(2002,11,11),date(2019,10,10),date(2020,11,12))
+        self.assertEqual(rental.rental_id,123)
+        self.assertEqual(rental.movie_id,456)
+        self.assertEqual(rental.client_id,789)
+        self.assertEqual(rental.rented_date,date(2002,11,11))
+        self.assertEqual(rental.due_date,date(2019,10,10))
+        self.assertEqual(rental.returned_date,date(2020,11,12))
+
+
+#MovieTest.test_movie(True)
+#ClientTest.test_client(True)
+#RentalTest.test_rental(True)
 
 
 

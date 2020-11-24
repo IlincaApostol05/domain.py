@@ -1,4 +1,5 @@
 from datetime import date
+
 class movieException(Exception):
     def __init__(self, message):
         self._message = message
@@ -132,6 +133,15 @@ class Rental:
     @property
     def rental_id(self):
         return self._rental_id
+
+    @property
+    def movie_id(self):
+        return self._movie_id
+
+    @property
+    def client_id(self):
+        return self._client_id
+
 
     @property
     def due_date(self):

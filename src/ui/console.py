@@ -1,5 +1,4 @@
 from src.domain.domain import clientException,movieException,rentalException
-from src.Validators.validate import ClientValidator,MovieValidator
 """
     UI class.
 
@@ -37,12 +36,12 @@ class Console:
 
     def display_movies_ui(self):
         for movie in self._service._movies:
-            print(str(str(movie.movie_id) + " " + str(movie._title) + " " + movie._description + " " + movie._genre))
+            print(movie)
 
 
     def display_clients_ui(self):
         for client in self._service._clients:
-            print(str(str(client._client_id)+" "+str(client._name)))
+            print(client)
 
 
     def display_rentals_ui(self):

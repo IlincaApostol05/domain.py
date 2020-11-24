@@ -5,50 +5,32 @@ from src.domain.domain import clientException
 from src.domain.domain import rentalException
 from src.domain.domain import Rental
 from random import randint
-import secrets
-from src.Validators.validate import ClientValidator,MovieValidator,Rental_validator
 from re import search
+import unittest
 
 
 class Service:
     """
         Class for the functions that implement the required functionalities.
     """
-    def __init__(self):
+    def __init__(self,movie_repository,client_repository,rental_repository,movie_validator,client_validator,rental_validator):
+        self._movie_repository = movie_repository
+        self._client_repository = client_repository
+        self._rental_repository = rental_repository
+        self._movie_validator = movie_validator
+        self._client_validator = client_validator
+        self._rental_validator = rental_validator
+
+        self._movies=self._movie_repository._movies
+        self._clients=self._client_repository._clients
+        self._rented=self._rental_repository._rented
+
+
         """
         Generates the initial lists of movies,clients and rentals
         """
-        self._movies = [Movie(1726, "| Alice in wonderland |","The best animated movie |", "Animation"),
-                        Movie(1989, "| Da Vinci Code |", "What are the secrets of Paris? |", "Mistery"),
-                        Movie(1237, "| No time to die |", "2020 movie |", "Action", ),
-                        Movie(2314, "| Annabell |", "See if you can resist |", "Horror"),
-                        Movie(8499, "| The Secret |", "The secret to leading a successful life |", "Documentary"),
-                        Movie(1647, "| Mister Bean |", "Try not to laugh |", "Comedy"),
-                        Movie(1849, "| Inferno |", "It is true what Dante said? |", "Thriller"),
-                        Movie(4739, "| The invisible guest |", "Who will solve the crime..? |", "Police"),
-                        Movie(9237, "| Jurassic World |", "What would life be with dinosaurs? |", "SF"),
-                        Movie(1856, "| Word War two |", "What really happened in Word War two?","History")]
 
-        self._clients = [Client(164, "Olivia Smith"),
-                        Client(273, "Sophia Jones"),
-                        Client(934, "Charlie Anderson"),
-                        Client(830, "Harry Wright"),
-                        Client(293, "Charlotte Brown"),
-                        Client(334, "Thomas Edwards"),
-                        Client(732, "Ruby White"),
-                        Client(139, "Henry Moore"),
-                        Client(456, "Ben Jones"),
-                        Client(528, "Dylan Martin")]
-        self._rented = []
-        self._movie_id=[]
-        self._client_id=[]
-        for index in self._movies:
-            self._movie_id.append(index._movie_id)
-        for index1 in self._clients:
-            self._client_id.append(index1._client_id)
-        for index in range(len(self._movies)):
-                self._rented.append(Rental(randint(10000,90000),secrets.choice(self._movie_id),secrets.choice(self._client_id),date(randint(2015,2017),randint(1,10),randint(1,30)),date(randint(2018,2020),randint(11,12),randint(1,30)),date(randint(2018,2020),randint(1,12),randint(1,30))))
-                index+=1
+
 
     @property
     def clients(self):
@@ -57,6 +39,11 @@ class Service:
     @property
     def rented(self):
         return self._rented
+
+
+
+    def get_all_movie(self):
+        return self._movie_repository.get_all_movies()
 
 
 
@@ -69,12 +56,13 @@ class Service:
         :param genre: (str)-The genre of the movie that we want to add
         :return:
         """
-        movie = Movie(id,title,description,genre)
-        for index in self._movies[::-1]:
+        movie = str(Movie(id,title,description,genre))
+        for index in self._movies:
             if id == index._movie_id:
-               raise movieException("Two movies cannot have the same id")
-        self._movies.append(movie)
+                raise movieException("Two movies cannot have the same id")
+        self._movie_repository.add(movie)
         print("Movie succesfully added")
+
 
 
     def remove_movie(self,id):
@@ -87,7 +75,7 @@ class Service:
         for index in self._movies[::-1]:
             if id == index._movie_id:
                 found =True
-                self._movies.remove(index)
+                self._movie_repository.remove(index)
                 print("Movie succesfully removed")
         if found == False:
             raise movieException("This movie cannot be removed because it is not in the list")
@@ -113,7 +101,8 @@ class Service:
         if found == False:
             raise movieException("This movie cannot be updated because it is not in the list")
 
-
+    def get_all_clients(self):
+        return self._client_repository._clients
 
     def add_client(self,id,name):
         """
@@ -126,7 +115,7 @@ class Service:
         for index in self._clients:
             if id == index._client_id:
                 raise clientException("Two clients cannot have the same id")
-        self._clients.append(client)
+        self._client_repository.add(client)
         print("Client succesfully added")
 
 
@@ -140,7 +129,7 @@ class Service:
         for index in self._clients[::-1]:
             if id == index._client_id:
                 found = True
-                self._clients.remove(index)
+                self._client_repository.remove(index)
                 print("Client succesfully removed")
         if found == False:
             raise clientException("This client cannot be removed because it is not in the list")
@@ -410,7 +399,11 @@ class Statistics:
     def __len__(self):
         return len(self._clients)
 
+
 class Test_Service:
+    """
+    Class to test the functions
+    """
     def __init__(self):
         pass
 
@@ -487,6 +480,9 @@ class Test_Service:
         Test_Service.test_update_clients(self)
 
 #Test_Service.test_all(True)
+
+
+
 
 
 
