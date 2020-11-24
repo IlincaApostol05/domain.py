@@ -6,7 +6,6 @@ from src.domain.domain import rentalException
 from src.domain.domain import Rental
 from random import randint
 from re import search
-import unittest
 
 
 class Service:

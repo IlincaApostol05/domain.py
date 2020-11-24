@@ -2,6 +2,7 @@ from src.Validators.validate import ClientValidator,MovieValidator,Rental_valida
 from src.domain.domain import clientException,movieException,rentalException,Client,Movie,Rental
 from datetime import date
 import unittest
+from src.services.service import Service,Statistics
 
 
 class Test_ClientValidator:
@@ -265,6 +266,72 @@ class RentalTest(unittest.TestCase):
 #MovieTest.test_movie(True)
 #ClientTest.test_client(True)
 #RentalTest.test_rental(True)
+
+class Test_Functions(unittest.TestCase):
+
+    def setUp(self):
+        self._Test = Service()
+        self._Test.add_movie(368,'Avatar','Best movie','Action')
+        self._Test.add_movie(647, 'Ted', '2000movie', 'Horror')
+        self._Test.add_client(378,'John Snow')
+        self._Test.add_client(849,'Mary Donald')
+        self._Test.rent_a_movie(566,578,date(2020,11,11),date(2019,11,11))
+        self._Test.rent_a_movie(948, 378, date(2020, 11, 11), date(2019, 11, 11))
+
+
+    def test_movie_list(self):
+        self.assertEqual(len(self._Test.get_all_movie,2))
+
+
+    def test_client_list(self):
+        self.assertEqual(len(self._Test.get_all_clients()))
+
+
+    def test_update_movie(self):
+        id=123
+        newtitle='Harry Potter 8'
+        newdescription='new movie'
+        newgenre='action'
+        self._Test.update_movies(id,newtitle,newdescription,newgenre)
+        for movie in self._Test.get_all_movie():
+            self.assertEqual(movie.title,'Harry Potter 8')
+            self.assertEqual(movie.description, 'new movie')
+            self.assertEqual(movie.genre, 'action')
+            break
+
+
+    def test_update_client(self):
+        id=233
+        newname='Jack Dan'
+        self._Test.update_client(id,newname)
+        for client in self._Test.get_all_clients():
+            self.assertEqual(client.client_id,233)
+            self.assertEqual(client.name,'Jack Dan')
+            break
+
+
+class TestStatistics(unittest.TestCase):
+    
+    def setUp(self):
+        self._Test =Statistics
+        self._Test.max_delay()
+        self._Test.id_in_rentals(378)
+        self._Test.max_rentals()
+        self._Test.most_rented_movies()
+        self._Test.sort_late_rentals()
+        self._Test.sort_most_active_clients()
+
+    def test_how_days_delay(self):
+        id=368
+        self._Test.how_days_delay(id)
+
+    def test_how_many_times_rented(self):
+        id=378
+        self._Test.how_many_times_rented(id)
+
+
+
+
 
 
 
