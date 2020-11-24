@@ -9,8 +9,9 @@ from src.Validators.validate import ClientValidator,MovieValidator
 """
 class Console:
 
-    def __init__(self, service):
+    def __init__(self, service,statistics):
         self._service = service
+        self._statistics = statistics
 
 
 
@@ -26,7 +27,13 @@ class Console:
         print("9.Update clients")
         print("10.Rent movie")
         print("11.Return movie")
-        print("12.Exit")
+        print("12.Find movie by title")
+        print("13.Find client by name")
+        print("14.Most rented movies")
+        print("15.Late rentals")
+        print("16.Most active clients")
+        print("17.Exit")
+
 
     def display_movies_ui(self):
         for movie in self._service._movies:
@@ -96,6 +103,31 @@ class Console:
         self._service.return_a_movie(client_id,movie_id,returned_days)
 
 
+    def find_movie_by_title_ui(self):
+        title = str(input("which title?:"))
+        for index in self._service.find_movie_by_title(title):
+            print(index)
+
+
+    def find_client_by_name_ui(self):
+        name = str(input("which name?:"))
+        for index in self._service.find_client_by_name(name):
+            print(index)
+
+
+    def sort_most_rented_ui(self):
+        for index in self._statistics.most_rented_movies():
+            print(index)
+
+
+    def sort_late_rentals_ui(self):
+        for index in self._statistics.sort_late_rentals():
+            print(index)
+
+    def sort_most_active_clients_ui(self):
+        for index in self._statistics.sort_most_active_clients():
+            print(index)
+
     def start_command_ui(self):
         done = False
         self.show_menu_ui()
@@ -125,8 +157,18 @@ class Console:
                 elif command == '11':
                     self.return_movie_ui()
                 elif command == '12':
+                    self.find_movie_by_title_ui()
+                elif command == '13':
+                    self.find_client_by_name_ui()
+                elif command == '14':
+                    self.sort_most_rented_ui()
+                elif command == '15':
+                    self.sort_late_rentals_ui()
+                elif command == '16':
+                    self.sort_most_active_clients_ui()
+                elif command == '17':
                     done =True
-                    print("Bye bye!")
+                    print("Bye bye!:)")
                 else:
                     print("Bad input")
             except movieException as me:

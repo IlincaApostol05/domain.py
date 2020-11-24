@@ -1,7 +1,6 @@
 from src.Validators.validate import ClientValidator,MovieValidator,Rental_validator
 from src.domain.domain import clientException,movieException,rentalException,Client,Movie,Rental
 from datetime import date
-from src.services.service import Service
 
 
 class Test_ClientValidator:
@@ -234,59 +233,11 @@ class Test_Rentals_Validation:
 
 #Test_Rentals_Validation.run_all_tests_rentals()
 
-class Test_functions:
-
-    def __init__(self,service):
-        self._service=service
-
-    @staticmethod
-    def test_add_movie():
-        service = Service()
-        assert len(service) != 0
-        try:
-            service.add_movie(123,'Alladin','Children movie','Animation')
-        except movieException:
-            assert True
-        assert len(service) != 1
-
-
-    @staticmethod
-    def test_add_client():
-        service = Service()
-        assert len(service) != 0
-        try:
-            service.add_client(123,'Brown Nathan')
-        except clientException:
-            assert True
-        assert len(service) != 1
-
-
-    @staticmethod
-    def test_remove_movie():
-        service = Service()
-        assert len(service) != 2
-        try:
-            service.remove_movie(123,'Alladin','Children movie','Animation')
-        except movieException:
-            assert True
-        assert len(service) != 1
-
-    @staticmethod
-    def test_remove_client():
-        service = Service()
-        assert len(service) != 2
-        try:
-            service.remove_movie(123,'John Brown')
-        except clientException:
-            assert True
-        assert len(service) != 1
 
 
 
-Test_functions.test_add_client()
-Test_functions.test_add_movie()
-Test_functions.test_remove_movie()
-Test_functions.test_remove_movie()
+
+
 
 
 

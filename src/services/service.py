@@ -5,7 +5,9 @@ from src.domain.domain import clientException
 from src.domain.domain import rentalException
 from src.domain.domain import Rental
 from random import randint
+import secrets
 from src.Validators.validate import ClientValidator,MovieValidator,Rental_validator
+from re import search
 
 
 class Service:
@@ -17,18 +19,18 @@ class Service:
         Generates the initial lists of movies,clients and rentals
         """
         self._movies = [Movie(1726, "| Alice in wonderland |","The best animated movie |", "Animation"),
-                        Movie(8374, "| Da Vinci Code |", "What are the secrets of Paris? |", "Mistery"),
-                        Movie(4739, "| No time to die |", "2020 movie |", "Action", ),
+                        Movie(1989, "| Da Vinci Code |", "What are the secrets of Paris? |", "Mistery"),
+                        Movie(1237, "| No time to die |", "2020 movie |", "Action", ),
                         Movie(2314, "| Annabell |", "See if you can resist |", "Horror"),
-                        Movie(1849, "| The Secret |", "The secret to leading a successful life |", "Documentary"),
-                        Movie(1348, "| Mister Bean |", "Try not to laugh |", "Comedy"),
-                        Movie(1949, "| Inferno |", "It is true what Dante said? |", "Thriller"),
-                        Movie(8634, "| The invisible guest |", "Who will solve the crime..? |", "Police"),
+                        Movie(8499, "| The Secret |", "The secret to leading a successful life |", "Documentary"),
+                        Movie(1647, "| Mister Bean |", "Try not to laugh |", "Comedy"),
+                        Movie(1849, "| Inferno |", "It is true what Dante said? |", "Thriller"),
+                        Movie(4739, "| The invisible guest |", "Who will solve the crime..? |", "Police"),
                         Movie(9237, "| Jurassic World |", "What would life be with dinosaurs? |", "SF"),
-                        Movie(3847, "| Word War two |", "What really happened in Word War two?","History")]
+                        Movie(1856, "| Word War two |", "What really happened in Word War two?","History")]
 
         self._clients = [Client(164, "Olivia Smith"),
-                        Client(273, "Sophia Robinson"),
+                        Client(273, "Sophia Jones"),
                         Client(934, "Charlie Anderson"),
                         Client(830, "Harry Wright"),
                         Client(293, "Charlotte Brown"),
@@ -38,13 +40,15 @@ class Service:
                         Client(456, "Ben Jones"),
                         Client(528, "Dylan Martin")]
         self._rented = []
-        for index in range(len(self._movies)-1):
-            for index2 in self._clients:
-                self._rented.append(Rental(randint(10000,90000),self._movies[index]._movie_id,index2._client_id,date(randint(2015,2017),randint(1,10),randint(1,30)),date(randint(2018,2020),randint(11,12),randint(1,30)),date(randint(2018,2020),randint(1,12),randint(1,30))))
+        self._movie_id=[]
+        self._client_id=[]
+        for index in self._movies:
+            self._movie_id.append(index._movie_id)
+        for index1 in self._clients:
+            self._client_id.append(index1._client_id)
+        for index in range(len(self._movies)):
+                self._rented.append(Rental(randint(10000,90000),secrets.choice(self._movie_id),secrets.choice(self._client_id),date(randint(2015,2017),randint(1,10),randint(1,30)),date(randint(2018,2020),randint(11,12),randint(1,30)),date(randint(2018,2020),randint(1,12),randint(1,30))))
                 index+=1
-            break
-
-
 
     @property
     def clients(self):
@@ -190,7 +194,7 @@ class Service:
                 if self.have_rented(client_id) == 0:
                     if movie_id == index._movie_id:
                         found1 = 1
-                        rented = Rental(randint(10000,90000),movie_id,client_id,rented_day,given_day,"0")
+                        rented = Rental(randint(10000,90000),movie_id,client_id,rented_day,given_day,'0')
                         self._rented.append(rented)
                         print("Movie succesfully rented")
         if self.have_rented(client_id) == 1:
@@ -199,8 +203,7 @@ class Service:
             raise rentalException("This movie is not available,it is not in the list")
 
 
-
-    def return_a_movie(self,client_id,movie_id,returned_days):
+    def return_a_movie(self, client_id, movie_id, returned_days):
         """
         This function return a movie at a given day
         :param client_id: The id(int) of the client who wants to return the movie
@@ -208,7 +211,7 @@ class Service:
         :param returned_days: The moment when the client wants to return the movie
         :return:
         """
-        found=0
+        found = 0
         for index in self._rented:
             if index._returned_date == '0':
                 if client_id == index._client_id:
@@ -218,7 +221,297 @@ class Service:
                         print("Movie succesfully returned")
                         break
         if found == 0:
-            raise movieException("But this movie was returned!")
+            raise ValueError("But this movie was returned!")
 
+
+    def find_movie_by_title(self,semititle):
+        """
+        This function find a movie by a given partial title
+        :param semititle:The partial title given
+        :return:The list with the movies we are searching for
+        """
+        list = []
+        for index in range(len(self._movies)):
+            if search(semititle , self._movies[index]._title):
+                list.append(str(self._movies[index]._movie_id)+" "+self._movies[index]._title+" "+self._movies[index]._description+""+self._movies[index]._genre)
+        return list
+
+
+    def find_client_by_name(self,seminame):
+        """
+        This function find a client by a given partial name
+        :param seminame: The partial name given
+        :return: The list with the clients we are searching for
+        """
+        list =[]
+        for index in range(len(self._clients)):
+            if search(seminame,self._clients[index]._name):
+                list.append(str(self._clients[index]._client_id)+" "+self._clients[index]._name)
+        return list
+
+
+class Statistics:
+    def __init__(self,service):
+        self._service =service
+        self._movies=self._service._movies
+        self._clients = self._service._clients
+        self._rented = self._service._rented
+
+
+    def how_many_times_rented(self,thismovie):
+        """
+        This function calculates how many times a movie was rented
+        :param thismovie: The movie(int) given by the user
+        :return: The nr(int) = how many times a movie was rented
+        """
+        nr=0
+        for index in self._rented[::-1]:
+            if index._movie_id == thismovie:
+                nr=nr+1
+        return nr
+
+
+    def max(self):
+        """
+        This function calculates the maximum sum = how many times appeared the movie that was rented most often
+        :return: The max(int)
+        """
+        max=0
+        for index in self._rented:
+            if self.how_many_times_rented(index._movie_id) > max:
+                max = self.how_many_times_rented(index._movie_id)
+        return max
+
+
+    def id_in_rentals(self,id):
+        """
+        This function check if a given movie was rented
+        :param id: The id of the movie given by the user
+        :return:
+        """
+        found=False
+        for index in self._movies:
+            for index2 in self._rented:
+                if index._movie_id == index2._movie_id==id:
+                    found=True
+        return found
+
+
+    def most_rented_movies(self):
+        """
+        This function provide the list of movies, sorted in descending order of the number of days they were rented.
+        :return:The list
+        """
+        new_list=[]
+        max=self.max()
+        for j in range(max+1,-1,-1):
+            for index in self._movies[:]:
+                if self.how_many_times_rented(index._movie_id) == j:
+                    new_list.append(str(index._movie_id)+" "+index._title+" "+index._genre+" "+index._description)
+        return new_list
+
+
+
+
+    def has_past(self,movieid):
+        """
+        This function tell us if a rented movie passed it due date for return
+        :param movieid: The movie id(int) given by the user
+        :return: True if had passed,False otherwise
+        """
+        passed = False
+        for index in self._rented:
+            if index._movie_id == movieid:
+                if index._returned_date > index._due_date:
+                    passed=True
+        return passed
+
+
+    def how_days_delay(self,movieid):
+        """
+        This function computes the number of days that passed for a rented movie=returned_date-due_date
+        :param movieid: The movie id given by the user
+        :return: The number of days
+        """
+        number_of_days=0
+        for index in self._rented:
+            if index._movie_id == movieid:
+                if self.has_past(movieid) == True:
+                    number_of_days = number_of_days + abs((index._returned_date - index._due_date).days)
+        return number_of_days
+
+
+    def max_delay(self):
+        """
+        This function find the rented movie with the biggest delay and returns it
+        :return: max(int)-the rented movie with the biggest delay
+        """
+        max = 0
+        for index in self._rented[::-1]:
+            if self.how_days_delay(index._movie_id) > max:
+                max = max + self.how_days_delay(index._movie_id)
+        return max
+
+
+    def sort_late_rentals(self):
+        """
+        This function sort in descending order->
+        ->All the movies that are currently rented, for which the due date for return has passed and put them in a new list
+        :return:The new list
+        """
+        new_list=[]
+        max=self.max_delay()
+        for index in range(max+1,0,-1):
+            for j in self._movies:
+                if self.how_days_delay(j._movie_id) == index:
+                    new_list.append(str(j._movie_id) + " " + j._title + " " + j._genre + " " + j._description)
+        return new_list
+
+
+    def sum_rentals(self,client):
+        """
+        This function computes the total rentals for a client,which is equal with the sum
+         of the (returned_date-rented_date) for every rented movie
+        :param client: The id(int) of a client given by the user in order to calculate the sum
+        :return:
+        """
+        sum = 0
+        for index in self._rented:
+            if client == index._client_id:
+                sum+=abs((index._returned_date - index._rented_date).days)
+        return sum
+
+
+    def max_rentals(self):
+        """
+        This function search for the client with the biggest sum of rentals and return that sum
+        :return: The max(int)=the biggest sum of rentals
+        """
+        max=0
+        for index in self._clients:
+            if self.sum_rentals(index._client_id) >max:
+                max =max+ self.sum_rentals(index._client_id)
+        return max
+
+
+    def sort_most_active_clients(self):
+        """
+        This function provides the new list of movies sorting in descending order of the number of movie rental days they have
+        :return:The new list
+        """
+        new_list=[]
+        max=self.max_rentals()
+        for index in range(max + 1, -1, -1):
+            for j in self._clients:
+                if self.sum_rentals(j._client_id) == index:
+                    new_list.append(str(j._client_id) + " " + j._name)
+        return new_list
+
+    def __len__(self):
+        return len(self._clients)
+
+class Test_Service:
+    def __init__(self):
+        pass
+
+    def test_add_movie(self):
+        service = Service()
+        try:
+            service.add_movie(123,'Alladin','Children movie','Animation')
+        except movieException:
+            assert True
+
+
+    def test_add_client(self):
+        service = Service()
+        try:
+            service.add_client(123,'Brown Nathan')
+        except clientException:
+            assert True
+
+
+    def test_remove_movie(self):
+        service = Service()
+        try:
+            service.remove_movie(948)
+        except movieException:
+            assert True
+
+
+    def test_remove_client(self):
+        service = Service()
+        try:
+            service.remove_movie(758)
+        except clientException:
+            assert True
+
+    def test_update_movies(self):
+        id=123
+        try:
+            Service.update_movies(id)
+        except movieException:
+            assert True
+
+    def test_update_clients(self):
+        id=123
+        try:
+            Service.update_client(id)
+        except clientException:
+            assert True
+
+    def test_rent_movie(self):
+        client_id=1233
+        movie_id=123
+        rented_day=date(2020,11,11)
+        given_date=date(2020,12,12)
+        try:
+            Service.rent_a_movie(client_id,movie_id,rented_day,given_date)
+        except movieException:
+            assert True
+
+    def test_return_movie(self):
+        client_id=123
+        movie_id=489
+        return_date=date(2019,11,11)
+        try:
+            Service.return_a_movie(client_id,movie_id,return_date)
+        except movieException:
+            assert True
+
+    def test_all(self):
+        Test_Service.test_add_movie(self)
+        Test_Service.test_add_client(self)
+        Test_Service.test_remove_movie(self)
+        Test_Service.test_remove_client(self)
+        Test_Service.test_update_movies(self)
+        Test_Service.test_update_clients(self)
+
+#Test_Service.test_all(True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
 

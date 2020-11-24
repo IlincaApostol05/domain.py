@@ -58,6 +58,9 @@ class Movie:
     def __str__(self):
         return str(self._movie_id) +" "+self._title+" "+self._description+" "+self._genre
 
+    def find(self, subtitle):
+        pass
+
 
 class clientException(Exception):
     def __init__(self, msg):
@@ -173,3 +176,5 @@ def test_domain():
     test_Rental()
 
 #test_domain()
+
+
